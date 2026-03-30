@@ -1,6 +1,6 @@
-# Instagram Auto Unfollow
+# Instagram DM Chatbot Automation (HEHO)
 
-An automated script to unfollow Instagram accounts using Puppeteer and Crawlee.
+This project automates Instagram Direct Message replies by forwarding incoming messages to **HEHO AI** and sending the AI response back to Instagram.
 
 ## Setup
 
@@ -9,54 +9,67 @@ An automated script to unfollow Instagram accounts using Puppeteer and Crawlee.
    npm install
    ```
 
-2. **Configure environment variables:**
-   - Update the values in `.env` with your Instagram credentials:
-   
+2. **Configure environment variables** in `.env`:
+
    ```env
    INSTAGRAM_USERNAME=your_instagram_username
    INSTAGRAM_PASSWORD=your_instagram_password
-   MAX_UNFOLLOW_COUNT=100
-   UNFOLLOW_DELAY=5000
-   SCROLL_DELAY=3000
+
+   HEHO_API_KEY=your_heho_api_key
+   HEHO_CHATBOT_ID=your_chatbot_id
+   HEHO_API_URL=https://heho.vercel.app/api/aichat
+
+   POLL_INTERVAL=4000
+   MAX_HISTORY=20
    ```
 
-3. **Run the script:**
+3. **Run the bot:**
    ```bash
    npm start
    ```
 
-## Configuration
+## How it works
 
-- `INSTAGRAM_USERNAME`: Your Instagram username
-- `INSTAGRAM_PASSWORD`: Your Instagram password  
-- `MAX_UNFOLLOW_COUNT`: Maximum number of accounts to unfollow (default: 100)
-- `UNFOLLOW_DELAY`: Delay between unfollows in milliseconds (default: 5000)
-- `SCROLL_DELAY`: Delay when scrolling to load more users in milliseconds (default: 3000)
+- Logs into Instagram using cookies (or credentials if cookies are missing/expired).
+- Opens Instagram DM inbox.
+- Reads latest incoming user message from the active thread.
+- Sends message to HEHO `POST /api/aichat`.
+- Receives AI response and sends reply on Instagram.
+- Repeats in a polling loop.
 
-## Features
+## HEHO API format used
 
-- Automatically logs into Instagram using stored cookies
-- Navigates to your following list
-- Unfollows accounts with configurable delays
-- Saves session cookies for future runs
-- Environment-based configuration for security
+The bot sends requests like:
+
+```json
+{
+  "chatbotId": "YOUR_AGENT_ID",
+  "messages": [{ "role": "user", "content": "Hello?" }],
+  "history": [{ "role": "user", "content": "Earlier message" }]
+}
+```
+
+With headers:
+
+- `Authorization: Bearer YOUR_HEHO_API_KEY`
+- `Content-Type: application/json`
+
+## Environment Variables
+
+- `INSTAGRAM_USERNAME`: Instagram username
+- `INSTAGRAM_PASSWORD`: Instagram password
+- `HEHO_API_KEY`: HEHO API bearer token
+- `HEHO_CHATBOT_ID`: HEHO chatbot ID
+- `HEHO_API_URL`: HEHO endpoint (default: `https://heho.vercel.app/api/aichat`)
+- `POLL_INTERVAL`: Poll delay in ms between checks (default: 4000)
+- `MAX_HISTORY`: Number of recent messages sent as context (default: 20)
 
 ## Security
 
-- Your credentials are stored in `.env` file which is ignored by git
-- Session cookies are saved locally to avoid repeated logins
-- All sensitive information is kept out of the source code
+- Keep `.env` private.
+- Do not hardcode tokens.
+- Cookies are saved locally in `cookies.json` for session reuse.
 
 ## Note
 
-This script is for educational purposes. Please ensure you comply with Instagram's Terms of Service and use responsibly.
-
----
-
-## Credits
-
-This project was developed by **Kaif Ali**. All rights and credits go to Kaif Ali for creating and maintaining this repository.
-
-## Support
-
-If you like this project, please consider giving it a ⭐ on GitHub. Your support is greatly appreciated!
+Use responsibly and in compliance with Instagram and HEHO terms/policies.
